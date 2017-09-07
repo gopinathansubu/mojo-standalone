@@ -643,7 +643,7 @@ class MessagePipe(object):
     self.handle0 = Handle(chandle0)
     self.handle1 = Handle(chandle1)
     if result != c_core.MOJO_RESULT_OK:
-      raise c_core.MojoException(result)
+      raise MojoException(result)
 
 
 class CreateDataPipeOptions(object):
