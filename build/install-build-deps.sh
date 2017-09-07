@@ -83,10 +83,35 @@ install_dep_from_tarfile $MARKUPSAFE_SRC_URL 'markupsafe'
 # Download and extract Cython.
 mkdir -p $THIRD_PARTY_DIR/cython
 cd $THIRD_PARTY_DIR/cython
-curl --remote-name http://cython.org/release/Cython-0.20.2.zip
-unzip Cython-0.20.2.zip
-rm -rf Cython-0.20.2.zip
-mv Cython-0.20.2 src
+read prefix cython_version <<< `pip show cython | grep "^Version:"`
+echo "cython version = $cython_version"
+
+pip_output=`pip install cython -d . --no-binary :all:`
+echo "pip saved in $pip_output"
+
+zip_type="zip"
+tar_type="tar.gz"
+zip_cython_package="Cython-$cython_version.$zip_type" 
+#echo "zip = $zip_cython_package"
+tar_cython_package="Cython-$cython_version.$tar_type"
+#echo "gunzip = $tar_cython_package"
+
+if [ -f ./$zip_cython_package ]
+then
+    echo "$zip_cython_package found "
+    unzip $zip_cython_package
+    rm -rf $zip_cython_package
+elif [ -f $tar_cython_package ]
+then
+    echo "$tar_cython_package found "
+    gunzip $tar_cython_package
+    tar -xf "Cython-$cython_version.tar"
+else
+    echo "unknown found: `ls Cython-*` "
+fi
+
+
+mv "Cython-$cython_version" src
 
 # Install the Mojo shell
 $BUILD_DIR/download_mojo_shell.py
